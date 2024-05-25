@@ -1,22 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Sidebar from './components/Sidebar';
 import TaskCard from './components/TaskCard';
 import TaskForm from './components/TaskForm';
-import { v4 as uuidv4 } from 'uuid';
-
-const initialTasks = [
-  { id: uuidv4(), title: "Hello World", description: "Hello World here...", date: "2023-11-03", status: "Completed" },
-  { id: uuidv4(), title: "Update Passwords", description: "Review online accounts and update passwords for better security. Use a password manager to keep track.", date: "2023-10-13", status: "Completed" },
-  { id: uuidv4(), title: "Watch a video from Fireship", description: "Enroll in That Weird JavaScript Course by Fireship.io", date: "2023-11-10", status: "Incomplete" },
-  { id: uuidv4(), title: "Attend Yoga Class", description: "Join the local yoga studio's session this weekend to relax and improve flexibility.", date: "2023-10-27", status: "Incomplete" },
-  { id: uuidv4(), title: "Dentist Appointment", description: "Schedule a 6-month check-up with the dentist.", date: "2023-10-25", status: "Completed" },
-];
 
 const App = () => {
-  const [tasks, setTasks] = useState(initialTasks);
+  const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState('all');
   const [editingTask, setEditingTask] = useState(null);
   const [viewingTask, setViewingTask] = useState(null);
+
+  // Fetch tasks from API
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/tasks');
+        console.log('Tasks:', response.data);
+        setTasks(response.data);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   const filteredTasks = tasks.filter((task) => {
     if (filter === 'all') return true;
@@ -25,18 +32,32 @@ const App = () => {
     return true;
   });
 
-  const saveTask = (task) => {
-    if (task.id) {
-      setTasks(tasks.map(t => (t.id === task.id ? task : t)));
+  const saveTask = async (task) => {
+    if (task._id) {
+      try {
+        const response = await axios.put(`http://localhost:5000/api/tasks/${task._id}`, task);
+        setTasks(tasks.map(t => (t._id === task._id ? response.data : t)));
+      } catch (error) {
+        console.error('Error updating task:', error);
+      }
     } else {
-      task.id = uuidv4();
-      setTasks([...tasks, task]);
+      try {
+        const response = await axios.post('http://localhost:5000/api/tasks', task);
+        setTasks([...tasks, response.data]);
+      } catch (error) {
+        console.error('Error creating task:', error);
+      }
     }
     setEditingTask(null);
   };
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id));
+  const deleteTask = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/tasks/${id}`);
+      setTasks(tasks.filter(task => task._id !== id));
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
   };
 
   return (
@@ -48,7 +69,7 @@ const App = () => {
         <h1 className="text-2xl font-semibold mb-6">All Tasks</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTasks.map(task => (
-            <TaskCard key={task.id} task={task} onDelete={deleteTask} onEdit={setEditingTask} onView={setViewingTask} />
+            <TaskCard key={task._id} task={task} onDelete={deleteTask} onEdit={setEditingTask} onView={setViewingTask} />
           ))}
           <div className="p-4 bg-gray-700 rounded-lg flex justify-center items-center cursor-pointer hover:bg-gray-600" onClick={() => setEditingTask({})}>
             <span className="text-xl">+ Add New Task</span>

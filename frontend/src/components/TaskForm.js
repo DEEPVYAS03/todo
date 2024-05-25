@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { format } from 'date-fns';
 
 const TaskForm = ({ onSave, taskToEdit, onCancel }) => {
   const [task, setTask] = useState({
-    id: null,
+    _id: null,
     title: '',
     description: '',
     date: '',
@@ -13,6 +14,7 @@ const TaskForm = ({ onSave, taskToEdit, onCancel }) => {
     if (taskToEdit) {
       setTask({
         ...taskToEdit,
+        date: taskToEdit.date ? format(new Date(taskToEdit.date), 'yyyy-MM-dd') : '',
         status: taskToEdit.status || 'Incomplete',
       });
     }
@@ -30,7 +32,7 @@ const TaskForm = ({ onSave, taskToEdit, onCancel }) => {
     e.preventDefault();
     onSave(task);
     setTask({
-      id: null,
+      _id: null,
       title: '',
       description: '',
       date: '',
@@ -40,7 +42,7 @@ const TaskForm = ({ onSave, taskToEdit, onCancel }) => {
 
   return (
     <div className="p-4 bg-gray-800 rounded-lg text-white w-full max-w-lg mx-auto">
-      <h2 className="text-xl font-semibold mb-4">{task.id ? 'Edit Task' : 'Add Task'}</h2>
+      <h2 className="text-xl font-semibold mb-4">{task._id ? 'Edit Task' : 'Add Task'}</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block mb-2">Title</label>
