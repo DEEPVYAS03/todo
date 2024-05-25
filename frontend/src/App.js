@@ -60,16 +60,37 @@ const App = () => {
     }
   };
 
+  const completeTask = async (task) => {
+    try {
+      const updatedTask = { ...task, status: 'Completed' };
+      const response = await axios.put(`http://localhost:5000/api/tasks/${task._id}`, updatedTask);
+      setTasks(tasks.map(t => (t._id === task._id ? response.data : t)));
+    } catch (error) {
+      console.error('Error completing task:', error);
+    }
+  };
+
+  const getHeading = () => {
+    switch (filter) {
+      case 'completed':
+        return 'Completed Tasks';
+      case 'incomplete':
+        return 'Pending Tasks';
+      default:
+        return 'Your Task List';
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-900 text-white">
       <div className="w-full md:w-64 md:fixed md:h-full">
         <Sidebar setFilter={setFilter} />
       </div>
       <main className="flex-1 p-6 overflow-y-auto mt-16 md:mt-0 md:ml-64">
-        <h1 className="text-2xl font-semibold mb-6">All Tasks</h1>
+        <h1 className="text-2xl font-semibold mb-6">{getHeading()}</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTasks.map(task => (
-            <TaskCard key={task._id} task={task} onDelete={deleteTask} onEdit={setEditingTask} onView={setViewingTask} />
+            <TaskCard key={task._id} task={task} onDelete={deleteTask} onEdit={setEditingTask} onView={setViewingTask} onComplete={completeTask} />
           ))}
           <div className="p-4 bg-gray-700 rounded-lg flex justify-center items-center cursor-pointer hover:bg-gray-600" onClick={() => setEditingTask({})}>
             <span className="text-xl">+ Add New Task</span>

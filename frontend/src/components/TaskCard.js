@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 
-const TaskCard = ({ task, onDelete, onEdit, onView }) => {
+const TaskCard = ({ task, onDelete, onEdit, onView, onComplete }) => {
   // Format the date
   const formattedDate = task.date ? format(new Date(task.date), 'MMMM d, yyyy') : 'No date';
 
@@ -25,6 +25,9 @@ const TaskCard = ({ task, onDelete, onEdit, onView }) => {
       <div className="mt-auto flex space-x-2">
         <button onClick={(e) => { e.stopPropagation(); onEdit(task); }} className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-2 rounded">Edit</button>
         <button onClick={(e) => { e.stopPropagation(); onDelete(task._id); }} className="bg-red-600 hover:bg-red-700 text-white py-1 px-2 rounded">Delete</button>
+        {task.status !== 'Completed' && (
+          <button onClick={(e) => { e.stopPropagation(); onComplete(task); }} className="bg-green-600 hover:bg-green-700 text-white py-1 px-2 rounded">Add To Complete</button>
+        )}
       </div>
     </div>
   );
