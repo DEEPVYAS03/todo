@@ -13,21 +13,6 @@ TodoEase is a ultimate to-do list website, combining a sleek and responsive fron
     ```bash
     cd todo
     ```
-    
-### Frontend Installation
-
-1. Navigate to the frontend directory:
-     ```bash
-    cd frontend
-    ```
-2. Install the dependencies
-    ```bash
-    npm install
-    ```
-3. Start the development server
-    ```bash
-    npm start
-    ```
 
 ## Environment Variables
 To configure the environment variables for the backend, create a .env file in the backend directory and add the following content:
@@ -51,6 +36,22 @@ PORT=5000
      ```bash
     nodemon
      ```
+
+### Frontend Installation
+
+1. Navigate to the frontend directory:
+     ```bash
+    cd frontend
+    ```
+2. Install the dependencies
+    ```bash
+    npm install
+    ```
+3. Start the development server
+    ```bash
+    npm start
+    ```
+
 
 ## Screenshots of working system
 
